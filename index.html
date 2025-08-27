@@ -3,565 +3,631 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Rifa Profesional</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Ruleta Solidaria</title>
     <style>
-        :root {
-            --primary: #4e73df;
-            --secondary: #6f42c1;
-            --success: #1cc88a;
-            --danger: #e74a3b;
-            --warning: #f6c23e;
-            --info: #36b9cc;
-            --light: #f8f9fc;
-            --dark: #5a5c69;
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Arial', sans-serif;
         }
-        
+
         body {
-            background-color: #f8f9fc;
-            color: #333;
-            line-height: 1.6;
-            background: linear-gradient(to bottom, #f8f9fc, #e0e6f8);
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
             min-height: 100vh;
-        }
-        
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px;
-        }
-        
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 2rem 0;
+            overflow-x: hidden;
+        }
+
+        header {
             text-align: center;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 20px;
+            width: 100%;
         }
-        
-        header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            transform: rotate(30deg);
-        }
-        
+
         h1 {
             font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        
-        .ribbon {
-            background: var(--warning);
-            color: #333;
-            padding: 8px 20px;
-            display: inline-block;
-            border-radius: 30px;
-            font-weight: bold;
-            margin: 10px 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .rifa-info {
-            background-color: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            border-left: 5px solid var(--primary);
-        }
-        
-        .rifa-title {
-            color: var(--primary);
-            margin-bottom: 1rem;
-            font-size: 1.8rem;
-        }
-        
-        .premio-section {
-            background: linear-gradient(45deg, #fff6e9, #ffedcc);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            border: 2px dashed var(--warning);
-        }
-        
-        .premio-titulo {
-            color: #e67e22;
-            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             margin-bottom: 10px;
         }
-        
-        .premio-descripcion {
-            font-size: 1.3rem;
-            color: #d35400;
-            font-weight: 600;
+
+        .copyright {
+            font-size: 0.8rem;
+            opacity: 0.8;
         }
-        
-        .countdown {
-            background: linear-gradient(45deg, #2c3e50, #4a69bd);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 25px 0;
-            text-align: center;
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 900px;
+            width: 100%;
         }
-        
-        .countdown-titulo {
-            margin-bottom: 15px;
-            font-size: 1.4rem;
-        }
-        
-        #timer {
+
+        .controls {
             display: flex;
             justify-content: center;
-            gap: 15px;
-        }
-        
-        .timer-unit {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            min-width: 80px;
-        }
-        
-        .timer-value {
-            font-size: 2.2rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .timer-label {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-        
-        .stats {
-            display: flex;
-            justify-content: space-around;
+            gap: 20px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
-            margin: 1.5rem 0;
-            gap: 15px;
         }
-        
-        .stat-box {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            flex: 1;
-            min-width: 200px;
-            transition: transform 0.3s ease;
+
+        .mode-btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            background-color: #4a5568;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        
-        .stat-box:hover {
-            transform: translateY(-5px);
+
+        .mode-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
-        
-        .stat-number {
-            font-size: 2.2rem;
+
+        .mode-btn.active {
+            background-color: #2d3748;
+            box-shadow: 0 0 0 3px #63b3ed;
+        }
+
+        .spin-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
             font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 5px;
+            background: linear-gradient(to right, #e53e3e, #dd6b20);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
         }
-        
-        .stat-label {
-            color: var(--dark);
-            font-size: 0.9rem;
+
+        .spin-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
         }
-        
-        .numbers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
-            gap: 12px;
-            margin: 2.5rem 0;
+
+        .spin-btn:disabled {
+            background: #718096;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
-        
-        .number {
-            width: 65px;
-            height: 65px;
+
+        .wheel-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            margin-bottom: 30px;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            transform: rotate(0deg);
+            background: #0f7029;
+            border: 10px solid #3d0b63;
+        }
+
+        .wheel-item {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
+            left: 0;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            padding-left: 10px;
+            font-size: 14px;
+            overflow: hidden;
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid var(--primary);
-            border-radius: 50%;
             font-weight: bold;
-            background-color: white;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-            position: relative;
+            color: #333;
+            border: 5px solid #3d0b63;
         }
-        
-        .number.sold {
-            background-color: var(--success);
-            color: white;
-            border-color: var(--success);
-            transform: scale(1.05);
+
+        .pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 40px;
+            background-color: #e53e3e;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            z-index: 11;
         }
-        
-        .number.selected {
-            background-color: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(78, 115, 223, 0.5);
-        }
-        
-        .participants {
-            background-color: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2.5rem;
-            overflow: hidden;
-        }
-        
-        .section-title {
-            color: var(--primary);
-            margin-bottom: 1.5rem;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--light);
-            font-size: 1.5rem;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #eaeaea;
-        }
-        
-        th {
-            background-color: var(--light);
-            color: var(--dark);
-            font-weight: bold;
-        }
-        
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-        
-        .btn-comprar {
-            display: block;
-            width: 100%;
-            max-width: 300px;
-            margin: 30px auto;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--success) 0%, #17a673 100%);
-            color: white;
+
+        .result {
             text-align: center;
+            margin-top: 20px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .winner {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .celebrate {
+            animation: celebrate 0.5s infinite alternate;
+        }
+
+        @keyframes celebrate {
+            0% {
+                transform: scale(1);
+                color: #fff;
+                text-shadow: 0 0 10px #ff0, 0 0 20px #ff0;
+            }
+            100% {
+                transform: scale(1.1);
+                color: #ff0;
+                text-shadow: 0 0 20px #ff0, 0 0 30px #ff0, 0 0 40px #ff0;
+            }
+        }
+
+        .reset-btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+            background-color: #2f855a;
+            color: white;
+            border: none;
             border-radius: 50px;
-            font-weight: bold;
-            text-decoration: none;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
-        
-        .btn-comprar:hover {
+
+        .reset-btn:hover {
+            background-color: #276749;
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
-        
-        .winner-section {
-            background: linear-gradient(45deg, #fffaf0, #fff5e6);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 25px 0;
-            text-align: center;
-            border: 2px solid var(--warning);
+
+        /* Cohetes de celebración */
+        .rocket {
+            position: absolute;
+            width: 20px;
+            height: 80px;
+            bottom: -100px;
+            z-index: 100;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,5 L60,40 L50,35 L40,40 Z' fill='%23ff0'/%3E%3Cpath d='M50,35 L50,100 L45,85 L55,85 Z' fill='%23fff'/%3E%3C/svg%3E") center/contain no-repeat;
+            opacity: 0;
         }
-        
-        .winner-title {
-            color: #e67e22;
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 1.4rem;
+
+        @keyframes launch {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(10deg);
+                opacity: 0;
+            }
         }
-        
-        .winner-info {
-            font-size: 1.3rem;
-            color: #d35400;
-            font-weight: 600;
+
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 99;
         }
-        
-        footer {
-            text-align: center;
-            margin-top: 2rem;
-            padding: 1.5rem;
-            color: var(--dark);
-            background: white;
-            border-radius: 10px 10px 0 0;
-            box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.05);
+
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(3);
+                opacity: 0;
+            }
         }
-        
-        @media (max-width: 768px) {
-            .stats {
-                flex-direction: column;
+
+        .volume-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 50px;
+        }
+
+        .volume-control label {
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .volume-control input {
+            width: 80px;
+        }
+
+        @media (max-width: 550px) {
+            .wheel-container {
+                width: 350px;
+                height: 350px;
             }
             
-            .numbers-grid {
-                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            h1 {
+                font-size: 2rem;
             }
             
-            .number {
-                width: 50px;
-                height: 50px;
-                font-size: 1rem;
+            .winner {
+                font-size: 2rem;
             }
             
-            #timer {
-                flex-wrap: wrap;
+            .volume-control {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 15px;
             }
             
-            .timer-unit {
-                min-width: 70px;
-                padding: 10px;
-            }
-            
-            .timer-value {
-                font-size: 1.8rem;
+            .wheel-item {
+                font-size: 12px;
+                padding-left: 5px;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="container">
-            <div class="ribbon">
-                <i class="fas fa-ticket-alt"></i> Rifa 100% Verificada
-            </div>
-            <h1>Rifa Solidaria</h1>
-            <p>Sistema de seguimiento en tiempo real</p>
-        </div>
+        <h1>Ruleta Solidaria</h1>
+        <p class="copyright">© Todos los derechos reservados</p>
     </header>
-    
-    <div class="container">
-        <div class="rifa-info">
-            <h2 class="rifa-title" id="rifaName">Rifa Navideña 2023</h2>
-            <p><i class="far fa-calendar-alt"></i> Fecha del sorteo: <strong id="fechaSorteo">15 de Diciembre, 2023 - 5:00 PM</strong></p>
-            <p>Estado: <span class="ribbon" id="rifaStatus">En progreso</span></p>
-            
-            <div class="premio-section">
-                <div class="premio-titulo"><i class="fas fa-gift"></i> PREMIO PRINCIPAL</div>
-                <div class="premio-descripcion" id="premioDescripcion">$1,000,000 COP en efectivo</div>
-            </div>
-            
-            <div class="countdown">
-                <div class="countdown-titulo">El sorteo será en:</div>
-                <div id="timer">
-                    <div class="timer-unit">
-                        <div class="timer-value" id="days">00</div>
-                        <div class="timer-label">Días</div>
-                    </div>
-                    <div class="timer-unit">
-                        <div class="timer-value" id="hours">00</div>
-                        <div class="timer-label">Horas</div>
-                    </div>
-                    <div class="timer-unit">
-                        <div class="timer-value" id="minutes">00</div>
-                        <div class="timer-label">Minutos</div>
-                    </div>
-                    <div class="timer-unit">
-                        <div class="timer-value" id="seconds">00</div>
-                        <div class="timer-label">Segundos</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="stats">
-            <div class="stat-box">
-                <div class="stat-number" id="totalNumbers">100</div>
-                <div class="stat-label">Números totales</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number" id="soldNumbers">0</div>
-                <div class="stat-label">Números vendidos</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number" id="availableNumbers">100</div>
-                <div class="stat-label">Números disponibles</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number" id="soldPercent">0%</div>
-                <div class="stat-label">Porcentaje vendido</div>
-            </div>
-        </div>
-        
-        <h2 class="section-title">Números de la Rifa</h2>
-        <div class="numbers-grid" id="numbersContainer">
-            <!-- Los números se generarán con JavaScript -->
-        </div>
-        
-        <a href="https://forms.gle/zBN6eytpt4mYsFmcA" class="btn-comprar" target="_blank">
-            <i class="fas fa-shopping-cart"></i> Comprar mi número
-        </a>
-        
-        <div class="participants">
-            <h2 class="section-title">Participantes</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Número</th>
-                        <th>Apodo</th>
-                        <th>Teléfono</th>
-                    </tr>
-                </thead>
-                <tbody id="participantsTable">
-                    <!-- Los participantes se cargarán con JavaScript -->
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="winner-section" id="winnerSection" style="display: none;">
-            <div class="winner-title"><i class="fas fa-trophy"></i> GANADOR DEL SORTEO</div>
-            <div class="winner-info" id="winnerInfo">¡Felicidades al ganador!</div>
-        </div>
+
+    <div class="volume-control">
+        <label for="volume">🔊</label>
+        <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5">
     </div>
-    
-    <footer>
-        <div class="container">
-            <p>&copy; 2023 Sistema de Rifa Profesional. Todos los derechos reservados.</p>
+
+    <div class="container">
+        <div class="controls">
+            <button class="mode-btn active" id="mode-50">50 Números (00-49)</button>
+            <button class="mode-btn" id="mode-100">100 Números (00-99)</button>
         </div>
-    </footer>
+
+        <button class="spin-btn" id="spin-btn">Iniciar Ruleta</button>
+
+        <div class="wheel-container">
+            <div class="pointer"></div>
+            <div class="wheel" id="wheel"></div>
+            <div class="wheel-center">RULETA</div>
+        </div>
+
+        <div class="result">
+            <h2>Número Ganador:</h2>
+            <div class="winner" id="winner"></div>
+        </div>
+
+        <button class="reset-btn" id="reset-btn">Reiniciar Juego</button>
+    </div>
+
+    <!-- Elementos de audio -->
+    <audio id="wheel-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-slot-machine-spin-1075.mp3"></audio>
+    <audio id="win-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3"></audio>
+    <audio id="celebration-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-festive-party-fireworks-3144.mp3"></audio>
 
     <script>
-        // =============================================
-        // DATOS EDITABLES - ACTUALIZA ESTOS VALORES
-        // =============================================
-        const rifaData = {
-            name: "HOY JUEGA MILL",
-            fechaSorteo: "2025-08-26T23:00:00", // Formato: AÑO-MES-DÍAThora:minuto:segundo
-            premio: "1,000BS pago movil",
-            totalNumbers: 50,
-            soldNumbers: [5, 12, 23, 34, 45, 56, 67, 78, 89, 100],
-            participants: [
-              
-                { number: 1, a  {podo: "luish", telefono: "04125278450" },
-                
-            ],
-            // Si ya hay un ganador, complétalo aquí, sino déjalo como null
-            ganador: null
-        };
-        // =============================================
-        // FIN DE DATOS EDITABLES
-        // =============================================
-
-        // Función para formatear la fecha
-        function formatearFecha(fechaStr) {
-            const opciones = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-            return new Date(fechaStr).toLocaleDateString('es-ES', opciones);
-        }
-
-        // Función para inicializar la página
-        function initPage() {
-            // Actualizar información de la rifa
-            document.getElementById('rifaName').textContent = rifaData.name;
-            document.getElementById('fechaSorteo').textContent = formatearFecha(rifaData.fechaSorteo);
-            document.getElementById('premioDescripcion').textContent = rifaData.premio;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos del DOM
+            const wheel = document.getElementById('wheel');
+            const spinBtn = document.getElementById('spin-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const winnerElement = document.getElementById('winner');
+            const mode50Btn = document.getElementById('mode-50');
+            const mode100Btn = document.getElementById('mode-100');
+            const volumeControl = document.getElementById('volume');
             
-            document.getElementById('totalNumbers').textContent = rifaData.totalNumbers;
-            document.getElementById('soldNumbers').textContent = rifaData.soldNumbers.length;
-            const disponibles = rifaData.totalNumbers - rifaData.soldNumbers.length;
-            document.getElementById('availableNumbers').textContent = disponibles;
+            // Elementos de audio
+            const wheelSound = document.getElementById('wheel-sound');
+            const winSound = document.getElementById('win-sound');
+            const celebrationSound = document.getElementById('celebration-sound');
             
-            // Calcular porcentaje vendido
-            const porcentaje = Math.round((rifaData.soldNumbers.length / rifaData.totalNumbers) * 100);
-            document.getElementById('soldPercent').textContent = `${porcentaje}%`;
+            // Configurar volumen inicial
+            wheelSound.volume = volumeControl.value;
+            winSound.volume = volumeControl.value;
+            celebrationSound.volume = volumeControl.value;
             
-            // Generar números
-            const numbersContainer = document.getElementById('numbersContainer');
-            numbersContainer.innerHTML = '';
-            for (let i = 1; i <= rifaData.totalNumbers; i++) {
-                const numberElement = document.createElement('div');
-                numberElement.className = 'number';
-                numberElement.textContent = i;
-                
-                if (rifaData.soldNumbers.includes(i)) {
-                    numberElement.classList.add('sold');
-                }
-                
-                numbersContainer.appendChild(numberElement);
-            }
-            
-            // Llenar tabla de participantes
-            const participantsTable = document.getElementById('participantsTable');
-            participantsTable.innerHTML = '';
-            rifaData.participants.forEach(participant => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${participant.number}</td>
-                    <td>${participant.apodo}</td>
-                    <td>${participant.telefono}</td>
-                `;
-                participantsTable.appendChild(row);
+            // Actualizar volumen cuando cambia el control
+            volumeControl.addEventListener('input', function() {
+                wheelSound.volume = this.value;
+                winSound.volume = this.value;
+                celebrationSound.volume = this.value;
             });
             
-            // Mostrar ganador si existe
-            if (rifaData.ganador) {
-                document.getElementById('winnerSection').style.display = 'block';
-                document.getElementById('winnerInfo').textContent = 
-                    `Número ${rifaData.ganador.numero} - ${rifaData.ganador.apodo} (${rifaData.ganador.telefono})`;
-            }
-        }
-
-        // Countdown Timer
-        function updateCountdown() {
-            const countdownDate = new Date(rifaData.fechaSorteo).getTime();
-            const now = new Date().getTime();
-            const distance = countdownDate - now;
+            // Variables de estado
+            let isSpinning = false;
+            let currentMode = 50; // 50 o 100 números
+            let numbers = [];
             
-            if (distance < 0) {
-                // Si el sorteo ya pasó
-                document.getElementById('timer').innerHTML = '<div class="timer-value">¡SORTEO TERMINADO!</div>';
-                document.getElementById('rifaStatus').textContent = 'Finalizado';
-                document.getElementById('rifaStatus').classList.add('ribbon');
-                return;
+            // Inicializar la ruleta
+            initializeWheel();
+            
+            // Event Listeners
+            mode50Btn.addEventListener('click', () => changeMode(50));
+            mode100Btn.addEventListener('click', () => changeMode(100));
+            spinBtn.addEventListener('click', spinWheel);
+            resetBtn.addEventListener('click', resetGame);
+            
+            // Función para inicializar la ruleta
+            function initializeWheel() {
+                generateNumbers();
+                createWheelElements();
             }
             
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            // Función para cambiar el modo (50 o 100 números)
+            function changeMode(mode) {
+                if (isSpinning) return;
+                
+                currentMode = mode;
+                
+                // Actualizar botones de modo
+                mode50Btn.classList.toggle('active', mode === 50);
+                mode100Btn.classList.toggle('active', mode === 100);
+                
+                // Regenerar números y recrear la ruleta
+                generateNumbers();
+                createWheelElements();
+                
+                // Reiniciar el resultado
+                winnerElement.textContent = '';
+                winnerElement.classList.remove('celebrate');
+            }
             
-            document.getElementById('days').textContent = days.toString().padStart(2, '0');
-            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-        }
-
-        // Inicializar la página cuando se carga
-        window.onload = function() {
-            initPage();
-            updateCountdown();
-            // Actualizar el countdown cada segundo
-            setInterval(updateCountdown, 1000);
-        };
+            // Función para generar los números según el modo
+            function generateNumbers() {
+                numbers = [];
+                const maxNumber = currentMode === 50 ? 49 : 99;
+                
+                // Agregar el 00 primero
+                numbers.push('00');
+                
+                // Agregar los demás números
+                for (let i = 0; i <= maxNumber; i++) {
+                    numbers.push(i.toString().padStart(2, '0'));
+                }
+            }
+            
+            // Función para crear los elementos de la ruleta
+            function createWheelElements() {
+                // Limpiar la ruleta
+                wheel.innerHTML = '';
+                
+                const numItems = numbers.length;
+                const angle = 360 / numItems;
+                
+                // Crear los elementos para cada número
+                numbers.forEach((number, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'wheel-item';
+                    item.textContent = number;
+                    
+                    // Calcular rotación
+                    const rotation = angle * index;
+                    
+                    // Aplicar estilos
+                    item.style.transform = `rotate(${rotation}deg)`;
+                    
+                    // Colores: alternar entre rojo, negro y verde (solo para el 0)
+                    if (number === '00' || number === '0') {
+                        item.style.backgroundColor = '#008000'; // Verde
+                    } else if (parseInt(number) % 2 === 0) {
+                        item.style.backgroundColor = '#e53e3e'; // Rojo
+                    } else {
+                        item.style.backgroundColor = '#1a202c'; // Negro
+                    }
+                    
+                    // Ajustar el tamaño de fuente según el modo
+                    if (currentMode === 100) {
+                        item.style.fontSize = '10px';
+                    } else {
+                        item.style.fontSize = '14px';
+                    }
+                    
+                    wheel.appendChild(item);
+                });
+            }
+            
+            // Función para girar la ruleta
+            function spinWheel() {
+                if (isSpinning) return;
+                
+                isSpinning = true;
+                spinBtn.disabled = true;
+                winnerElement.textContent = '';
+                winnerElement.classList.remove('celebrate');
+                
+                // Reproducir sonido de ruleta girando
+                wheelSound.currentTime = 0;
+                wheelSound.play();
+                
+                // Seleccionar un número aleatorio
+                const randomIndex = Math.floor(Math.random() * numbers.length);
+                const winningNumber = numbers[randomIndex];
+                
+                // Calcular el ángulo para que el número ganador quede en el pointer
+                const anglePerItem = 360 / numbers.length;
+                const targetAngle = 3600 + (360 - (randomIndex * anglePerItem)); // 3600° = 10 vueltas completas
+                
+                // Aplicar la rotación
+                wheel.style.transform = `rotate(${targetAngle}deg)`;
+                
+                // Detener sonido de ruleta y mostrar resultado después de que termine la animación
+                setTimeout(() => {
+                    wheelSound.pause();
+                    showWinner(winningNumber);
+                    isSpinning = false;
+                    spinBtn.disabled = false;
+                }, 5000); // 5 segundos para que coincida con la duración de la transición CSS
+            }
+            
+            // Función para mostrar el ganador con efectos
+            function showWinner(number) {
+                winnerElement.textContent = number;
+                winnerElement.classList.add('celebrate');
+                
+                // Aplicar el color correspondiente al número ganador
+                if (number === '00' || number === '0') {
+                    winnerElement.style.color = '#008000'; // Verde
+                } else if (parseInt(number) % 2 === 0) {
+                    winnerElement.style.color = '#e53e3e'; // Rojo
+                } else {
+                    winnerElement.style.color = '#1a202c'; // Negro
+                }
+                
+                // Reproducir sonidos de victoria
+                winSound.currentTime = 0;
+                winSound.play();
+                
+                celebrationSound.currentTime = 0;
+                celebrationSound.play();
+                
+                // Lanzar cohetes de celebración
+                launchFireworks();
+            }
+            
+            // Función para lanzar fuegos artificiales
+            function launchFireworks() {
+                // Lanzar cohetes
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        createRocket();
+                    }, i * 300);
+                }
+                
+                // Crear explosiones
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        createExplosion();
+                    }, 1500 + i * 100);
+                }
+            }
+            
+            // Función para crear un cohete
+            function createRocket() {
+                const rocket = document.createElement('div');
+                rocket.className = 'rocket';
+                
+                // Posición horizontal aleatoria
+                const left = Math.random() * 80 + 10;
+                rocket.style.left = `${left}%`;
+                
+                // Animación aleatoria
+                const duration = Math.random() * 3 + 2;
+                rocket.style.animation = `launch ${duration}s ease-out forwards`;
+                
+                document.body.appendChild(rocket);
+                
+                // Eliminar el cohete después de la animación
+                setTimeout(() => {
+                    document.body.removeChild(rocket);
+                }, duration * 1000);
+            }
+            
+            // Función para crear una explosión
+            function createExplosion() {
+                const explosion = document.createElement('div');
+                explosion.className = 'firework';
+                
+                // Posición aleatoria
+                const left = Math.random() * 80 + 10;
+                const top = Math.random() * 50 + 10;
+                explosion.style.left = `${left}%`;
+                explosion.style.top = `${top}%`;
+                
+                // Color aleatorio
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                explosion.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Variables aleatorias para la animación
+                const tx = (Math.random() - 0.5) * 100;
+                const ty = (Math.random() - 0.5) * 100;
+                explosion.style.setProperty('--tx', `${tx}px`);
+                explosion.style.setProperty('--ty', `${ty}px`);
+                
+                // Duración aleatoria
+                const duration = Math.random() * 1 + 0.5;
+                explosion.style.animation = `explode ${duration}s ease-out forwards`;
+                
+                document.body.appendChild(explosion);
+                
+                // Eliminar la explosión después de la animación
+                setTimeout(() => {
+                    document.body.removeChild(explosion);
+                }, duration * 1000);
+            }
+            
+            // Función para reiniciar el juego
+            function resetGame() {
+                if (isSpinning) return;
+                
+                wheel.style.transition = 'none';
+                wheel.style.transform = 'rotate(0deg)';
+                
+                // Forzar reflow
+                void wheel.offsetWidth;
+                
+                // Restaurar la transición
+                wheel.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67)';
+                
+                winnerElement.textContent = '';
+                winnerElement.classList.remove('celebrate');
+                
+                // Detener todos los sonidos
+                wheelSound.pause();
+                winSound.pause();
+                celebrationSound.pause();
+            }
+        });
     </script>
 </body>
 </html>
