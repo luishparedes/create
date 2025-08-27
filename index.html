@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Rifa Profesional</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #6f42c1;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --info: #36b9cc;
+            --light: #f8f9fc;
+            --dark: #5a5c69;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fc;
+            color: #333;
+            line-height: 1.6;
+            background: linear-gradient(to bottom, #f8f9fc, #e0e6f8);
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .ribbon {
+            background: var(--warning);
+            color: #333;
+            padding: 8px 20px;
+            display: inline-block;
+            border-radius: 30px;
+            font-weight: bold;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .rifa-info {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-left: 5px solid var(--primary);
+        }
+        
+        .rifa-title {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        
+        .premio-section {
+            background: linear-gradient(45deg, #fff6e9, #ffedcc);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed var(--warning);
+        }
+        
+        .premio-titulo {
+            color: #e67e22;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .premio-descripcion {
+            font-size: 1.3rem;
+            color: #d35400;
+            font-weight: 600;
+        }
+        
+        .countdown {
+            background: linear-gradient(45deg, #2c3e50, #4a69bd);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .countdown-titulo {
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        #timer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .timer-unit {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 80px;
+        }
+        
+        .timer-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .timer-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+            gap: 15px;
+        }
+        
+        .stat-box {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-box:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+            gap: 12px;
+            margin: 2.5rem 0;
+        }
+        
+        .number {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            font-weight: bold;
+            background-color: white;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .number.sold {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+            transform: scale(1.05);
+        }
+        
+        .number.selected {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(78, 115, 223, 0.5);
+        }
+        
+        .participants {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2.5rem;
+            overflow: hidden;
+        }
+        
+        .section-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+            font-size: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        th {
+            background-color: var(--light);
+            color: var(--dark);
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .btn-comprar {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 30px auto;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--success) 0%, #17a673 100%);
+            color: white;
+            text-align: center;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-comprar:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .winner-section {
+            background: linear-gradient(45deg, #fffaf0, #fff5e6);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            text-align: center;
+            border: 2px solid var(--warning);
+        }
+        
+        .winner-title {
+            color: #e67e22;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .winner-info {
+            font-size: 1.3rem;
+            color: #d35400;
+            font-weight: 600;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            color: var(--dark);
+            background: white;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        @media (max-width: 768px) {
+            .stats {
+                flex-direction: column;
+            }
+            
+            .numbers-grid {
+                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            }
+            
+            .number {
+                width: 50px;
+                height: 50px;
+                font-size: 1rem;
+            }
+            
+            #timer {
+                flex-wrap: wrap;
+            }
+            
+            .timer-unit {
+                min-width: 70px;
+                padding: 10px;
+            }
+            
+            .timer-value {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="ribbon">
+                <i class="fas fa-ticket-alt"></i> Rifa 100% Verificada
+            </div>
+            <h1>Rifa Solidaria</h1>
+            <p>Sistema de seguimiento en tiempo real</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="rifa-info">
+            <h2 class="rifa-title" id="rifaName">Rifa Navideña 2023</h2>
+            <p><i class="far fa-calendar-alt"></i> Fecha del sorteo: <strong id="fechaSorteo">15 de Diciembre, 2023 - 5:00 PM</strong></p>
+            <p>Estado: <span class="ribbon" id="rifaStatus">En progreso</span></p>
+            
+            <div class="premio-section">
+                <div class="premio-titulo"><i class="fas fa-gift"></i> PREMIO PRINCIPAL</div>
+                <div class="premio-descripcion" id="premioDescripcion">$1,000,000 COP en efectivo</div>
+            </div>
+            
+            <div class="countdown">
+                <div class="countdown-titulo">El sorteo será en:</div>
+                <div id="timer">
+                    <div class="timer-unit">
+                        <div class="timer-value" id="days">00</div>
+                        <div class="timer-label">Días</div>
+                    </div>
+                    <div class="timer-unit">
+                        <div class="timer-value" id="hours">00</div>
+                        <div class="timer-label">Horas</div>
+                    </div>
+                    <div class="timer-unit">
+                        <div class="timer-value" id="minutes">00</div>
+                        <div class="timer-label">Minutos</div>
+                    </div>
+                    <div class="timer-unit">
+                        <div class="timer-value" id="seconds">00</div>
+                        <div class="timer-label">Segundos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-number" id="totalNumbers">100</div>
+                <div class="stat-label">Números totales</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="soldNumbers">0</div>
+                <div class="stat-label">Números vendidos</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="availableNumbers">100</div>
+                <div class="stat-label">Números disponibles</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="soldPercent">0%</div>
+                <div class="stat-label">Porcentaje vendido</div>
+            </div>
+        </div>
+        
+        <h2 class="section-title">Números de la Rifa</h2>
+        <div class="numbers-grid" id="numbersContainer">
+            <!-- Los números se generarán con JavaScript -->
+        </div>
+        
+        <a href="https://forms.gle/zBN6eytpt4mYsFmcA" class="btn-comprar" target="_blank">
+            <i class="fas fa-shopping-cart"></i> Comprar mi número
+        </a>
+        
+        <div class="participants">
+            <h2 class="section-title">Participantes</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Apodo</th>
+                        <th>Teléfono</th>
+                    </tr>
+                </thead>
+                <tbody id="participantsTable">
+                    <!-- Los participantes se cargarán con JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="winner-section" id="winnerSection" style="display: none;">
+            <div class="winner-title"><i class="fas fa-trophy"></i> GANADOR DEL SORTEO</div>
+            <div class="winner-info" id="winnerInfo">¡Felicidades al ganador!</div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Sistema de Rifa Profesional. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // =============================================
+        // DATOS EDITABLES - ACTUALIZA ESTOS VALORES
+        // =============================================
+        const rifaData = {
+            name: "Rifa Navideña 2023",
+            fechaSorteo: "2023-12-15T17:00:00", // Formato: AÑO-MES-DÍAThora:minuto:segundo
+            premio: "$1,000,000 COP en efectivo",
+            totalNumbers: 100,
+            soldNumbers: [5, 12, 23, 34, 45, 56, 67, 78, 89, 100],
+            participants: [
+                { number: 5, apodo: "JuanP", telefono: "3001234567" },
+                { number: 12, apodo: "Maria23", telefono: "3012345678" },
+                { number: 23, apodo: "CarlosM", telefono: "3023456789" },
+                { number: 34, apodo: "AnaG", telefono: "3034567890" },
+                { number: 45, apodo: "LuisR", telefono: "3045678901" },
+                { number: 56, apodo: "LauraS", telefono: "3056789012" },
+                { number: 67, apodo: "PedroN", telefono: "3067890123" },
+                { number: 78, apodo: "SofiaV", telefono: "3078901234" },
+                { number: 89, apodo: "DiegoL", telefono: "3089012345" },
+                { number: 100, apodo: "MartaP", telefono: "3090123456" }
+            ],
+            // Si ya hay un ganador, complétalo aquí, sino déjalo como null
+            ganador: null
+        };
+        // =============================================
+        // FIN DE DATOS EDITABLES
+        // =============================================
+
+        // Función para formatear la fecha
+        function formatearFecha(fechaStr) {
+            const opciones = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+            return new Date(fechaStr).toLocaleDateString('es-ES', opciones);
+        }
+
+        // Función para inicializar la página
+        function initPage() {
+            // Actualizar información de la rifa
+            document.getElementById('rifaName').textContent = rifaData.name;
+            document.getElementById('fechaSorteo').textContent = formatearFecha(rifaData.fechaSorteo);
+            document.getElementById('premioDescripcion').textContent = rifaData.premio;
+            
+            document.getElementById('totalNumbers').textContent = rifaData.totalNumbers;
+            document.getElementById('soldNumbers').textContent = rifaData.soldNumbers.length;
+            const disponibles = rifaData.totalNumbers - rifaData.soldNumbers.length;
+            document.getElementById('availableNumbers').textContent = disponibles;
+            
+            // Calcular porcentaje vendido
+            const porcentaje = Math.round((rifaData.soldNumbers.length / rifaData.totalNumbers) * 100);
+            document.getElementById('soldPercent').textContent = `${porcentaje}%`;
+            
+            // Generar números
+            const numbersContainer = document.getElementById('numbersContainer');
+            numbersContainer.innerHTML = '';
+            for (let i = 1; i <= rifaData.totalNumbers; i++) {
+                const numberElement = document.createElement('div');
+                numberElement.className = 'number';
+                numberElement.textContent = i;
+                
+                if (rifaData.soldNumbers.includes(i)) {
+                    numberElement.classList.add('sold');
+                }
+                
+                numbersContainer.appendChild(numberElement);
+            }
+            
+            // Llenar tabla de participantes
+            const participantsTable = document.getElementById('participantsTable');
+            participantsTable.innerHTML = '';
+            rifaData.participants.forEach(participant => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${participant.number}</td>
+                    <td>${participant.apodo}</td>
+                    <td>${participant.telefono}</td>
+                `;
+                participantsTable.appendChild(row);
+            });
+            
+            // Mostrar ganador si existe
+            if (rifaData.ganador) {
+                document.getElementById('winnerSection').style.display = 'block';
+                document.getElementById('winnerInfo').textContent = 
+                    `Número ${rifaData.ganador.numero} - ${rifaData.ganador.apodo} (${rifaData.ganador.telefono})`;
+            }
+        }
+
+        // Countdown Timer
+        function updateCountdown() {
+            const countdownDate = new Date(rifaData.fechaSorteo).getTime();
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
+            
+            if (distance < 0) {
+                // Si el sorteo ya pasó
+                document.getElementById('timer').innerHTML = '<div class="timer-value">¡SORTEO TERMINADO!</div>';
+                document.getElementById('rifaStatus').textContent = 'Finalizado';
+                document.getElementById('rifaStatus').classList.add('ribbon');
+                return;
+            }
+            
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        // Inicializar la página cuando se carga
+        window.onload = function() {
+            initPage();
+            updateCountdown();
+            // Actualizar el countdown cada segundo
+            setInterval(updateCountdown, 1000);
+        };
+    </script>
+</body>
+</html>
