@@ -75,10 +75,13 @@
             <div id="status-message" class="text-lg text-gray-400 p-4">Presiona 'Iniciar Escáner' para comenzar</div>
         </div>
         
-        <!-- Botón para iniciar el escáner -->
-        <div class="mb-6">
-            <button id="start-scanner-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out">
+        <!-- Botones para iniciar el escáner y cambiar de modo -->
+        <div class="mb-6 flex gap-4">
+            <button id="start-scanner-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out">
                 Iniciar Escáner
+            </button>
+            <button id="toggle-mode-btn" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out">
+                Entrada Manual
             </button>
         </div>
 
@@ -88,6 +91,13 @@
             <div id="result-display" class="bg-gray-700 p-4 rounded-xl text-center break-all">
                 <p id="barcode-value" class="text-lg text-gray-300">Esperando escaneo...</p>
             </div>
+            
+            <!-- Campo de entrada manual (oculto por defecto) -->
+            <div id="manual-input-container" class="mt-4 hidden">
+                <label for="manual-barcode-input" class="block text-sm font-medium mb-1">Ingresa el código manualmente:</label>
+                <input type="text" id="manual-barcode-input" placeholder="Ej. 1234567890" class="w-full bg-gray-700 text-gray-200 p-2 rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500">
+            </div>
+
             <div class="flex gap-4 mt-6">
                 <button id="entrada-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out disabled:opacity-50" disabled>
                     Entrada
@@ -122,9 +132,13 @@
         const statusMessageEl = document.getElementById('status-message');
         const scanOverlayEl = document.querySelector('.scan-overlay');
         const startScannerBtn = document.getElementById('start-scanner-btn');
-
+        const toggleModeBtn = document.getElementById('toggle-mode-btn');
+        const manualInputContainer = document.getElementById('manual-input-container');
+        const manualBarcodeInput = document.getElementById('manual-barcode-input');
+        
         let lastScannedBarcode = null;
         const TRANSACTIONS_KEY = 'inventario_transacciones';
+        let isScannerMode = true;
 
         const setButtonsEnabled = (isEnabled) => {
             entradaBtn.disabled = !isEnabled;
@@ -134,21 +148,30 @@
         const startScanner = () => {
             statusMessageEl.textContent = 'Cargando cámara...';
             startScannerBtn.disabled = true;
+            toggleModeBtn.disabled = true;
+            isScannerMode = true;
 
-            // Solicita acceso a la cámara
+            // Oculta el campo de entrada manual si está visible
+            manualInputContainer.classList.add('hidden');
+            manualBarcodeInput.value = '';
+
+            // Muestra los elementos del escáner
+            videoElement.style.display = 'block';
+            scanOverlayEl.style.display = 'block';
+            statusMessageEl.classList.remove('hidden');
+
             codeReader.getVideoInputDevices()
                 .then((videoInputDevices) => {
                     if (videoInputDevices.length === 0) {
                         showMessage('No se encontró una cámara en este dispositivo.', 'text-red-500');
                         startScannerBtn.disabled = false;
+                        toggleModeBtn.disabled = false;
                         statusMessageEl.textContent = 'Presiona \'Iniciar Escáner\' para comenzar';
                         return;
                     }
 
                     const selectedDeviceId = videoInputDevices[0].deviceId;
                     statusMessageEl.classList.add('hidden');
-                    videoElement.style.display = 'block';
-                    scanOverlayEl.style.display = 'block';
 
                     // Comienza a escanear continuamente desde la cámara
                     codeReader.decodeFromVideoDevice(selectedDeviceId, 'video-preview', (result, err) => {
@@ -173,7 +196,37 @@
                     console.error('Error al obtener dispositivos de video:', err);
                     statusMessageEl.textContent = 'Error: ' + err.message;
                     startScannerBtn.disabled = false;
+                    toggleModeBtn.disabled = false;
+                    // Si el escáner falla, cambia automáticamente a la entrada manual
+                    toggleToManualInput();
                 });
+        };
+
+        const toggleToManualInput = () => {
+            codeReader.reset(); // Detiene el escáner si está activo
+            isScannerMode = false;
+            
+            // Oculta los elementos del escáner
+            videoElement.style.display = 'none';
+            scanOverlayEl.style.display = 'none';
+            statusMessageEl.classList.remove('hidden');
+
+            // Muestra los elementos de entrada manual
+            manualInputContainer.classList.remove('hidden');
+            statusMessageEl.textContent = 'Modo de entrada manual. Ingresa el código y haz clic en un botón.';
+            toggleModeBtn.textContent = 'Iniciar Escáner';
+            startScannerBtn.disabled = true; // El botón de "Iniciar Escáner" no tiene sentido en este modo
+            setButtonsEnabled(true); // Habilita los botones de entrada/salida
+        };
+
+        const toggleMode = () => {
+            if (isScannerMode) {
+                toggleToManualInput();
+            } else {
+                // Alterna de nuevo al modo de escáner
+                toggleModeBtn.textContent = 'Entrada Manual';
+                startScanner();
+            }
         };
 
         const loadTransactions = () => {
@@ -195,14 +248,25 @@
         };
 
         const addTransaction = (type) => {
-            if (!lastScannedBarcode) {
-                showMessage('Por favor, escanea un código de barras primero.', 'text-red-500');
+            let barcodeToAdd = lastScannedBarcode;
+
+            // Si está en modo manual, toma el valor del campo de entrada
+            if (!isScannerMode) {
+                barcodeToAdd = manualBarcodeInput.value.trim();
+                if (!barcodeToAdd) {
+                    showMessage('El campo de código de barras no puede estar vacío.', 'text-red-500');
+                    return;
+                }
+            }
+
+            if (!barcodeToAdd) {
+                showMessage('Por favor, escanea o ingresa un código de barras primero.', 'text-red-500');
                 return;
             }
 
             const transactions = loadTransactions();
             const newTransaction = {
-                barcode: lastScannedBarcode,
+                barcode: barcodeToAdd,
                 type: type,
                 timestamp: new Date().toISOString()
             };
@@ -210,11 +274,16 @@
             transactions.push(newTransaction);
             saveTransactions(transactions);
 
-            showMessage(`Transacción de ${type} registrada para: ${lastScannedBarcode}`, 'text-green-500');
+            showMessage(`Transacción de ${type} registrada para: ${barcodeToAdd}`, 'text-green-500');
             lastScannedBarcode = null;
             barcodeValueEl.textContent = 'Esperando escaneo...';
             setButtonsEnabled(false);
             renderHistory();
+
+            // Limpia el campo de entrada manual después de la transacción
+            if (!isScannerMode) {
+                manualBarcodeInput.value = '';
+            }
         };
 
         const renderHistory = () => {
@@ -262,6 +331,7 @@
         };
 
         startScannerBtn.addEventListener('click', startScanner);
+        toggleModeBtn.addEventListener('click', toggleMode);
         entradaBtn.addEventListener('click', () => addTransaction('entrada'));
         salidaBtn.addEventListener('click', () => addTransaction('salida'));
 
