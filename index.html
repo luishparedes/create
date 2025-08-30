@@ -31,6 +31,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: none; /* Inicialmente oculto */
         }
         .scan-overlay {
             position: absolute;
@@ -41,6 +42,7 @@
             border: 5px solid #38a169;
             box-sizing: border-box;
             border-radius: 1rem;
+            display: none; /* Inicialmente oculto */
         }
         .loader {
             border: 4px solid #f3f3f3;
@@ -69,8 +71,8 @@
         <!-- Contenedor del escáner -->
         <div id="scanner-container" class="bg-gray-800 mb-6 flex items-center justify-center relative">
             <video id="video-preview" playsinline></video>
-            <div class="scan-overlay hidden"></div>
-            <div id="loading-message" class="text-lg text-gray-400 p-4">Presiona 'Iniciar Escáner'</div>
+            <div class="scan-overlay"></div>
+            <div id="status-message" class="text-lg text-gray-400 p-4">Presiona 'Iniciar Escáner' para comenzar</div>
         </div>
         
         <!-- Botón para iniciar el escáner -->
@@ -87,10 +89,10 @@
                 <p id="barcode-value" class="text-lg text-gray-300">Esperando escaneo...</p>
             </div>
             <div class="flex gap-4 mt-6">
-                <button id="entrada-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out">
+                <button id="entrada-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out disabled:opacity-50" disabled>
                     Entrada
                 </button>
-                <button id="salida-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out">
+                <button id="salida-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out disabled:opacity-50" disabled>
                     Salida
                 </button>
             </div>
@@ -117,31 +119,45 @@
         const entradaBtn = document.getElementById('entrada-btn');
         const salidaBtn = document.getElementById('salida-btn');
         const historyContainer = document.getElementById('history-container');
-        const loadingMessageEl = document.getElementById('loading-message');
-        const scanOverlayEl = document.getElementById('scan-overlay');
+        const statusMessageEl = document.getElementById('status-message');
+        const scanOverlayEl = document.querySelector('.scan-overlay');
         const startScannerBtn = document.getElementById('start-scanner-btn');
 
         let lastScannedBarcode = null;
         const TRANSACTIONS_KEY = 'inventario_transacciones';
 
+        const setButtonsEnabled = (isEnabled) => {
+            entradaBtn.disabled = !isEnabled;
+            salidaBtn.disabled = !isEnabled;
+        };
+
         const startScanner = () => {
-            loadingMessageEl.textContent = 'Cargando escáner...';
+            statusMessageEl.textContent = 'Cargando cámara...';
+            startScannerBtn.disabled = true;
+
+            // Solicita acceso a la cámara
             codeReader.getVideoInputDevices()
                 .then((videoInputDevices) => {
                     if (videoInputDevices.length === 0) {
                         showMessage('No se encontró una cámara en este dispositivo.', 'text-red-500');
+                        startScannerBtn.disabled = false;
+                        statusMessageEl.textContent = 'Presiona \'Iniciar Escáner\' para comenzar';
                         return;
                     }
-                    const selectedDeviceId = videoInputDevices[0].deviceId;
-                    loadingMessageEl.classList.add('hidden');
-                    scanOverlayEl.classList.remove('hidden');
 
+                    const selectedDeviceId = videoInputDevices[0].deviceId;
+                    statusMessageEl.classList.add('hidden');
+                    videoElement.style.display = 'block';
+                    scanOverlayEl.style.display = 'block';
+
+                    // Comienza a escanear continuamente desde la cámara
                     codeReader.decodeFromVideoDevice(selectedDeviceId, 'video-preview', (result, err) => {
                         if (result) {
                             console.log('Código de barras escaneado:', result.getText());
                             lastScannedBarcode = result.getText();
                             barcodeValueEl.textContent = lastScannedBarcode;
-                            showMessage('¡Código escaneado con éxito!', 'text-green-500');
+                            showMessage('¡Código escaneado con éxito! Haz clic en un botón.', 'text-green-500');
+                            setButtonsEnabled(true);
                         }
                         if (err) {
                             if (err.name === 'NotFoundError') {
@@ -155,7 +171,8 @@
                 })
                 .catch(err => {
                     console.error('Error al obtener dispositivos de video:', err);
-                    loadingMessageEl.textContent = 'Error: ' + err.message;
+                    statusMessageEl.textContent = 'Error: ' + err.message;
+                    startScannerBtn.disabled = false;
                 });
         };
 
@@ -196,6 +213,7 @@
             showMessage(`Transacción de ${type} registrada para: ${lastScannedBarcode}`, 'text-green-500');
             lastScannedBarcode = null;
             barcodeValueEl.textContent = 'Esperando escaneo...';
+            setButtonsEnabled(false);
             renderHistory();
         };
 
