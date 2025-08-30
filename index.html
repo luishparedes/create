@@ -3,631 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruleta Solidaria</title>
+    <title>Inventario Móvil</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c; /* Color de fondo oscuro */
+            color: #e2e8f0; /* Color de texto claro */
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
         }
-
-        body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            color: white;
-            overflow-x: hidden;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            width: 100%;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            margin-bottom: 10px;
-        }
-
-        .copyright {
-            font-size: 0.8rem;
-            opacity: 0.8;
-        }
-
         .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 900px;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        #scanner-container {
+            position: relative;
             width: 100%;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .mode-btn {
-            padding: 12px 25px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            background-color: #4a5568;
-            color: white;
-            transition: all 0.3s ease;
+            height: 300px;
+            overflow: hidden;
+            border-radius: 1rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        .mode-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .mode-btn.active {
-            background-color: #2d3748;
-            box-shadow: 0 0 0 3px #63b3ed;
-        }
-
-        .spin-btn {
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            background: linear-gradient(to right, #e53e3e, #dd6b20);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
-        }
-
-        .spin-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .spin-btn:disabled {
-            background: #718096;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .wheel-container {
-            position: relative;
-            width: 500px;
-            height: 500px;
-            margin-bottom: 30px;
-        }
-
-        .wheel {
+        #video-preview {
             width: 100%;
             height: 100%;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-            transition: transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            transform: rotate(0deg);
-            background: #0f7029;
-            border: 10px solid #3d0b63;
+            object-fit: cover;
         }
-
-        .wheel-item {
+        .scan-overlay {
             position: absolute;
-            width: 50%;
-            height: 50%;
-            transform-origin: bottom right;
-            left: 0;
             top: 0;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            font-weight: bold;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-            padding-left: 10px;
-            font-size: 14px;
-            overflow: hidden;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 5px solid #38a169;
+            box-sizing: border-box;
+            border-radius: 1rem;
         }
-
-        .wheel-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background-color: #fff;
+        .loader {
+            border: 4px solid #f3f3f3;
             border-radius: 50%;
-            z-index: 10;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #333;
-            border: 5px solid #3d0b63;
+            border-top: 4px solid #3498db;
+            width: 30px;
+            height: 30px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
         }
-
-        .pointer {
-            position: absolute;
-            top: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 40px;
-            background-color: #e53e3e;
-            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-            z-index: 11;
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
         }
-
-        .result {
-            text-align: center;
-            margin-top: 20px;
-            min-height: 100px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .winner {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 10px 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease;
-        }
-
-        .celebrate {
-            animation: celebrate 0.5s infinite alternate;
-        }
-
-        @keyframes celebrate {
-            0% {
-                transform: scale(1);
-                color: #fff;
-                text-shadow: 0 0 10px #ff0, 0 0 20px #ff0;
-            }
-            100% {
-                transform: scale(1.1);
-                color: #ff0;
-                text-shadow: 0 0 20px #ff0, 0 0 30px #ff0, 0 0 40px #ff0;
-            }
-        }
-
-        .reset-btn {
-            padding: 12px 30px;
-            font-size: 1rem;
-            background-color: #2f855a;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
-        .reset-btn:hover {
-            background-color: #276749;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Cohetes de celebración */
-        .rocket {
-            position: absolute;
-            width: 20px;
-            height: 80px;
-            bottom: -100px;
-            z-index: 100;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50,5 L60,40 L50,35 L40,40 Z' fill='%23ff0'/%3E%3Cpath d='M50,35 L50,100 L45,85 L55,85 Z' fill='%23fff'/%3E%3C/svg%3E") center/contain no-repeat;
-            opacity: 0;
-        }
-
-        @keyframes launch {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) rotate(10deg);
-                opacity: 0;
-            }
-        }
-
-        .firework {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            opacity: 0;
-            z-index: 99;
-        }
-
-        @keyframes explode {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--tx), var(--ty)) scale(3);
-                opacity: 0;
-            }
-        }
-
-        .volume-control {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            border-radius: 50px;
-        }
-
-        .volume-control label {
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .volume-control input {
-            width: 80px;
-        }
-
-        @media (max-width: 550px) {
-            .wheel-container {
-                width: 350px;
-                height: 350px;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .winner {
-                font-size: 2rem;
-            }
-            
-            .volume-control {
-                position: relative;
-                top: 0;
-                right: 0;
-                margin-bottom: 15px;
-            }
-            
-            .wheel-item {
-                font-size: 12px;
-                padding-left: 5px;
-            }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body>
-    <header>
-        <h1>Ruleta Solidaria</h1>
-        <p class="copyright">© Todos los derechos reservados</p>
-    </header>
+<body class="bg-gray-900 text-gray-100 flex flex-col min-h-screen">
+    <div class="container flex-grow">
+        <h1 class="text-3xl font-bold text-center mt-8 mb-4">Inventario Móvil</h1>
+        <p class="text-center text-gray-400 mb-8">Escanea códigos de barras para registrar entradas y salidas.</p>
 
-    <div class="volume-control">
-        <label for="volume">🔊</label>
-        <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5">
+        <!-- Contenedor del escáner -->
+        <div id="scanner-container" class="bg-gray-800 mb-6 flex items-center justify-center relative">
+            <video id="video-preview" playsinline></video>
+            <div class="scan-overlay hidden"></div>
+            <div id="loading-message" class="text-lg text-gray-400 p-4">Cargando escáner...</div>
+        </div>
+
+        <!-- Área de resultado y acciones -->
+        <div class="bg-gray-800 p-6 rounded-2xl shadow-lg mb-6">
+            <h2 class="text-xl font-semibold mb-3">Último Código Escaneado</h2>
+            <div id="result-display" class="bg-gray-700 p-4 rounded-xl text-center break-all">
+                <p id="barcode-value" class="text-lg text-gray-300">Esperando escaneo...</p>
+            </div>
+            <div class="flex gap-4 mt-6">
+                <button id="entrada-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out">
+                    Entrada
+                </button>
+                <button id="salida-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out">
+                    Salida
+                </button>
+            </div>
+            <p id="message-log" class="text-sm mt-4 text-center"></p>
+        </div>
+
+        <!-- Historial de transacciones -->
+        <div class="bg-gray-800 p-6 rounded-2xl shadow-lg mb-8">
+            <h2 class="text-xl font-semibold mb-4">Historial de 7 Días</h2>
+            <div id="history-container">
+                <p class="text-center text-gray-400">Cargando historial...</p>
+            </div>
+        </div>
     </div>
 
-    <div class="container">
-        <div class="controls">
-            <button class="mode-btn active" id="mode-50">50 Números (00-49)</button>
-            <button class="mode-btn" id="mode-100">100 Números (00-99)</button>
-        </div>
+    <!-- JavaScript para la aplicación de inventario -->
+    <script type="module">
+        import { BrowserMultiFormatReader } from 'https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/esm/index.js';
 
-        <button class="spin-btn" id="spin-btn">Iniciar Ruleta</button>
+        const codeReader = new BrowserMultiFormatReader();
+        const videoElement = document.getElementById('video-preview');
+        const barcodeValueEl = document.getElementById('barcode-value');
+        const messageLogEl = document.getElementById('message-log');
+        const entradaBtn = document.getElementById('entrada-btn');
+        const salidaBtn = document.getElementById('salida-btn');
+        const historyContainer = document.getElementById('history-container');
+        const loadingMessageEl = document.getElementById('loading-message');
+        const scanOverlayEl = document.getElementById('scan-overlay');
 
-        <div class="wheel-container">
-            <div class="pointer"></div>
-            <div class="wheel" id="wheel"></div>
-            <div class="wheel-center">RULETA</div>
-        </div>
+        let lastScannedBarcode = null;
+        const TRANSACTIONS_KEY = 'inventario_transacciones';
 
-        <div class="result">
-            <h2>Número Ganador:</h2>
-            <div class="winner" id="winner"></div>
-        </div>
+        const startScanner = () => {
+            codeReader.getVideoInputDevices()
+                .then((videoInputDevices) => {
+                    const selectedDeviceId = videoInputDevices[0].deviceId;
+                    loadingMessageEl.classList.add('hidden');
+                    scanOverlayEl.classList.remove('hidden');
 
-        <button class="reset-btn" id="reset-btn">Reiniciar Juego</button>
-    </div>
-
-    <!-- Elementos de audio -->
-    <audio id="wheel-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-slot-machine-spin-1075.mp3"></audio>
-    <audio id="win-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3"></audio>
-    <audio id="celebration-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-festive-party-fireworks-3144.mp3"></audio>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Elementos del DOM
-            const wheel = document.getElementById('wheel');
-            const spinBtn = document.getElementById('spin-btn');
-            const resetBtn = document.getElementById('reset-btn');
-            const winnerElement = document.getElementById('winner');
-            const mode50Btn = document.getElementById('mode-50');
-            const mode100Btn = document.getElementById('mode-100');
-            const volumeControl = document.getElementById('volume');
-            
-            // Elementos de audio
-            const wheelSound = document.getElementById('wheel-sound');
-            const winSound = document.getElementById('win-sound');
-            const celebrationSound = document.getElementById('celebration-sound');
-            
-            // Configurar volumen inicial
-            wheelSound.volume = volumeControl.value;
-            winSound.volume = volumeControl.value;
-            celebrationSound.volume = volumeControl.value;
-            
-            // Actualizar volumen cuando cambia el control
-            volumeControl.addEventListener('input', function() {
-                wheelSound.volume = this.value;
-                winSound.volume = this.value;
-                celebrationSound.volume = this.value;
-            });
-            
-            // Variables de estado
-            let isSpinning = false;
-            let currentMode = 50; // 50 o 100 números
-            let numbers = [];
-            
-            // Inicializar la ruleta
-            initializeWheel();
-            
-            // Event Listeners
-            mode50Btn.addEventListener('click', () => changeMode(50));
-            mode100Btn.addEventListener('click', () => changeMode(100));
-            spinBtn.addEventListener('click', spinWheel);
-            resetBtn.addEventListener('click', resetGame);
-            
-            // Función para inicializar la ruleta
-            function initializeWheel() {
-                generateNumbers();
-                createWheelElements();
-            }
-            
-            // Función para cambiar el modo (50 o 100 números)
-            function changeMode(mode) {
-                if (isSpinning) return;
-                
-                currentMode = mode;
-                
-                // Actualizar botones de modo
-                mode50Btn.classList.toggle('active', mode === 50);
-                mode100Btn.classList.toggle('active', mode === 100);
-                
-                // Regenerar números y recrear la ruleta
-                generateNumbers();
-                createWheelElements();
-                
-                // Reiniciar el resultado
-                winnerElement.textContent = '';
-                winnerElement.classList.remove('celebrate');
-            }
-            
-            // Función para generar los números según el modo
-            function generateNumbers() {
-                numbers = [];
-                const maxNumber = currentMode === 50 ? 49 : 99;
-                
-                // Agregar el 00 primero
-                numbers.push('00');
-                
-                // Agregar los demás números
-                for (let i = 0; i <= maxNumber; i++) {
-                    numbers.push(i.toString().padStart(2, '0'));
-                }
-            }
-            
-            // Función para crear los elementos de la ruleta
-            function createWheelElements() {
-                // Limpiar la ruleta
-                wheel.innerHTML = '';
-                
-                const numItems = numbers.length;
-                const angle = 360 / numItems;
-                
-                // Crear los elementos para cada número
-                numbers.forEach((number, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'wheel-item';
-                    item.textContent = number;
-                    
-                    // Calcular rotación
-                    const rotation = angle * index;
-                    
-                    // Aplicar estilos
-                    item.style.transform = `rotate(${rotation}deg)`;
-                    
-                    // Colores: alternar entre rojo, negro y verde (solo para el 0)
-                    if (number === '00' || number === '0') {
-                        item.style.backgroundColor = '#008000'; // Verde
-                    } else if (parseInt(number) % 2 === 0) {
-                        item.style.backgroundColor = '#e53e3e'; // Rojo
-                    } else {
-                        item.style.backgroundColor = '#1a202c'; // Negro
-                    }
-                    
-                    // Ajustar el tamaño de fuente según el modo
-                    if (currentMode === 100) {
-                        item.style.fontSize = '10px';
-                    } else {
-                        item.style.fontSize = '14px';
-                    }
-                    
-                    wheel.appendChild(item);
+                    codeReader.decodeFromVideoDevice(selectedDeviceId, 'video-preview', (result, err) => {
+                        if (result) {
+                            console.log('Código de barras escaneado:', result.getText());
+                            lastScannedBarcode = result.getText();
+                            barcodeValueEl.textContent = lastScannedBarcode;
+                            showMessage('¡Código escaneado con éxito!', 'text-green-500');
+                        }
+                        if (err) {
+                            if (err.name === 'NotFoundError') {
+                                showMessage('No se encontró una cámara.', 'text-red-500');
+                            } else if (err.name === 'NotAllowedError') {
+                                showMessage('Permiso de cámara denegado.', 'text-red-500');
+                            }
+                            console.error('Error al escanear:', err);
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.error('Error al obtener dispositivos de video:', err);
+                    loadingMessageEl.textContent = 'Error: ' + err.message;
                 });
+        };
+
+        const loadTransactions = () => {
+            try {
+                const transactions = JSON.parse(localStorage.getItem(TRANSACTIONS_KEY) || '[]');
+                return transactions;
+            } catch (e) {
+                console.error("Error al cargar datos de localStorage:", e);
+                return [];
             }
+        };
+
+        const saveTransactions = (transactions) => {
+            try {
+                localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions));
+            } catch (e) {
+                console.error("Error al guardar datos en localStorage:", e);
+            }
+        };
+
+        const addTransaction = (type) => {
+            if (!lastScannedBarcode) {
+                showMessage('Por favor, escanea un código de barras primero.', 'text-red-500');
+                return;
+            }
+
+            const transactions = loadTransactions();
+            const newTransaction = {
+                barcode: lastScannedBarcode,
+                type: type,
+                timestamp: new Date().toISOString()
+            };
+
+            transactions.push(newTransaction);
+            saveTransactions(transactions);
+
+            showMessage(`Transacción de ${type} registrada para: ${lastScannedBarcode}`, 'text-green-500');
+            lastScannedBarcode = null;
+            barcodeValueEl.textContent = 'Esperando escaneo...';
+            renderHistory();
+        };
+
+        const renderHistory = () => {
+            const transactions = loadTransactions();
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+            const recentTransactions = transactions.filter(t => new Date(t.timestamp) >= sevenDaysAgo);
             
-            // Función para girar la ruleta
-            function spinWheel() {
-                if (isSpinning) return;
-                
-                isSpinning = true;
-                spinBtn.disabled = true;
-                winnerElement.textContent = '';
-                winnerElement.classList.remove('celebrate');
-                
-                // Reproducir sonido de ruleta girando
-                wheelSound.currentTime = 0;
-                wheelSound.play();
-                
-                // Seleccionar un número aleatorio
-                const randomIndex = Math.floor(Math.random() * numbers.length);
-                const winningNumber = numbers[randomIndex];
-                
-                // Calcular el ángulo para que el número ganador quede en el pointer
-                const anglePerItem = 360 / numbers.length;
-                const targetAngle = 3600 + (360 - (randomIndex * anglePerItem)); // 3600° = 10 vueltas completas
-                
-                // Aplicar la rotación
-                wheel.style.transform = `rotate(${targetAngle}deg)`;
-                
-                // Detener sonido de ruleta y mostrar resultado después de que termine la animación
-                setTimeout(() => {
-                    wheelSound.pause();
-                    showWinner(winningNumber);
-                    isSpinning = false;
-                    spinBtn.disabled = false;
-                }, 5000); // 5 segundos para que coincida con la duración de la transición CSS
+            recentTransactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            if (recentTransactions.length === 0) {
+                historyContainer.innerHTML = `<p class="text-center text-gray-400">No hay transacciones en los últimos 7 días.</p>`;
+                return;
             }
-            
-            // Función para mostrar el ganador con efectos
-            function showWinner(number) {
-                winnerElement.textContent = number;
-                winnerElement.classList.add('celebrate');
-                
-                // Aplicar el color correspondiente al número ganador
-                if (number === '00' || number === '0') {
-                    winnerElement.style.color = '#008000'; // Verde
-                } else if (parseInt(number) % 2 === 0) {
-                    winnerElement.style.color = '#e53e3e'; // Rojo
-                } else {
-                    winnerElement.style.color = '#1a202c'; // Negro
-                }
-                
-                // Reproducir sonidos de victoria
-                winSound.currentTime = 0;
-                winSound.play();
-                
-                celebrationSound.currentTime = 0;
-                celebrationSound.play();
-                
-                // Lanzar cohetes de celebración
-                launchFireworks();
-            }
-            
-            // Función para lanzar fuegos artificiales
-            function launchFireworks() {
-                // Lanzar cohetes
-                for (let i = 0; i < 5; i++) {
-                    setTimeout(() => {
-                        createRocket();
-                    }, i * 300);
-                }
-                
-                // Crear explosiones
-                for (let i = 0; i < 20; i++) {
-                    setTimeout(() => {
-                        createExplosion();
-                    }, 1500 + i * 100);
-                }
-            }
-            
-            // Función para crear un cohete
-            function createRocket() {
-                const rocket = document.createElement('div');
-                rocket.className = 'rocket';
-                
-                // Posición horizontal aleatoria
-                const left = Math.random() * 80 + 10;
-                rocket.style.left = `${left}%`;
-                
-                // Animación aleatoria
-                const duration = Math.random() * 3 + 2;
-                rocket.style.animation = `launch ${duration}s ease-out forwards`;
-                
-                document.body.appendChild(rocket);
-                
-                // Eliminar el cohete después de la animación
-                setTimeout(() => {
-                    document.body.removeChild(rocket);
-                }, duration * 1000);
-            }
-            
-            // Función para crear una explosión
-            function createExplosion() {
-                const explosion = document.createElement('div');
-                explosion.className = 'firework';
-                
-                // Posición aleatoria
-                const left = Math.random() * 80 + 10;
-                const top = Math.random() * 50 + 10;
-                explosion.style.left = `${left}%`;
-                explosion.style.top = `${top}%`;
-                
-                // Color aleatorio
-                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
-                explosion.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                // Variables aleatorias para la animación
-                const tx = (Math.random() - 0.5) * 100;
-                const ty = (Math.random() - 0.5) * 100;
-                explosion.style.setProperty('--tx', `${tx}px`);
-                explosion.style.setProperty('--ty', `${ty}px`);
-                
-                // Duración aleatoria
-                const duration = Math.random() * 1 + 0.5;
-                explosion.style.animation = `explode ${duration}s ease-out forwards`;
-                
-                document.body.appendChild(explosion);
-                
-                // Eliminar la explosión después de la animación
-                setTimeout(() => {
-                    document.body.removeChild(explosion);
-                }, duration * 1000);
-            }
-            
-            // Función para reiniciar el juego
-            function resetGame() {
-                if (isSpinning) return;
-                
-                wheel.style.transition = 'none';
-                wheel.style.transform = 'rotate(0deg)';
-                
-                // Forzar reflow
-                void wheel.offsetWidth;
-                
-                // Restaurar la transición
-                wheel.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67)';
-                
-                winnerElement.textContent = '';
-                winnerElement.classList.remove('celebrate');
-                
-                // Detener todos los sonidos
-                wheelSound.pause();
-                winSound.pause();
-                celebrationSound.pause();
-            }
-        });
+
+            historyContainer.innerHTML = '';
+            recentTransactions.forEach(t => {
+                const date = new Date(t.timestamp).toLocaleString();
+                const typeClass = t.type === 'entrada' ? 'text-green-400' : 'text-red-400';
+                const typeText = t.type === 'entrada' ? 'Entrada' : 'Salida';
+
+                const div = document.createElement('div');
+                div.className = "bg-gray-700 p-3 rounded-lg mb-2 flex justify-between items-center";
+                div.innerHTML = `
+                    <div>
+                        <p class="text-sm font-semibold break-all">Código: ${t.barcode}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-bold ${typeClass}">${typeText}</p>
+                        <p class="text-xs text-gray-400">${date}</p>
+                    </div>
+                `;
+                historyContainer.appendChild(div);
+            });
+        };
+
+        const showMessage = (message, colorClass) => {
+            messageLogEl.textContent = message;
+            messageLogEl.className = `text-sm mt-4 text-center ${colorClass}`;
+            setTimeout(() => {
+                messageLogEl.textContent = '';
+                messageLogEl.className = `text-sm mt-4 text-center`;
+            }, 3000);
+        };
+
+        entradaBtn.addEventListener('click', () => addTransaction('entrada'));
+        salidaBtn.addEventListener('click', () => addTransaction('salida'));
+
+        // Cargar el historial al iniciar la aplicación
+        window.onload = () => {
+            startScanner();
+            renderHistory();
+        };
     </script>
 </body>
 </html>
