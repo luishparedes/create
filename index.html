@@ -70,7 +70,14 @@
         <div id="scanner-container" class="bg-gray-800 mb-6 flex items-center justify-center relative">
             <video id="video-preview" playsinline></video>
             <div class="scan-overlay hidden"></div>
-            <div id="loading-message" class="text-lg text-gray-400 p-4">Cargando escáner...</div>
+            <div id="loading-message" class="text-lg text-gray-400 p-4">Presiona 'Iniciar Escáner'</div>
+        </div>
+        
+        <!-- Botón para iniciar el escáner -->
+        <div class="mb-6">
+            <button id="start-scanner-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition duration-300 ease-in-out">
+                Iniciar Escáner
+            </button>
         </div>
 
         <!-- Área de resultado y acciones -->
@@ -112,13 +119,19 @@
         const historyContainer = document.getElementById('history-container');
         const loadingMessageEl = document.getElementById('loading-message');
         const scanOverlayEl = document.getElementById('scan-overlay');
+        const startScannerBtn = document.getElementById('start-scanner-btn');
 
         let lastScannedBarcode = null;
         const TRANSACTIONS_KEY = 'inventario_transacciones';
 
         const startScanner = () => {
+            loadingMessageEl.textContent = 'Cargando escáner...';
             codeReader.getVideoInputDevices()
                 .then((videoInputDevices) => {
+                    if (videoInputDevices.length === 0) {
+                        showMessage('No se encontró una cámara en este dispositivo.', 'text-red-500');
+                        return;
+                    }
                     const selectedDeviceId = videoInputDevices[0].deviceId;
                     loadingMessageEl.classList.add('hidden');
                     scanOverlayEl.classList.remove('hidden');
@@ -230,12 +243,12 @@
             }, 3000);
         };
 
+        startScannerBtn.addEventListener('click', startScanner);
         entradaBtn.addEventListener('click', () => addTransaction('entrada'));
         salidaBtn.addEventListener('click', () => addTransaction('salida'));
 
         // Cargar el historial al iniciar la aplicación
         window.onload = () => {
-            startScanner();
             renderHistory();
         };
     </script>
